@@ -1,0 +1,1335 @@
+<!doctype html>
+<html lang="si">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f7fb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="මාසික">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <title>මාසික — ඔබේ මාසික අයවැය</title>
+  <style>
+    :root {
+      font-family: "Noto Sans Sinhala", "Iskoola Pota", "Segoe UI", sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      color: #20243a;
+      background: #f6f7fb;
+      --ink: #20243a;
+      --muted: #85899c;
+      --line: #ececf2;
+      --paper: #fff;
+      --purple: #6959d8;
+      --purple-light: #f0edff;
+      --green: #2b9b78;
+      --green-light: #e8f7f1;
+      --red: #df6f72;
+      --red-light: #fff0ef;
+      --shadow: 0 12px 35px rgba(34, 39, 73, .055);
+    }
+    * { box-sizing: border-box; }
+    body { min-width: 0; min-height: 100vh; margin: 0; padding: 38px 24px 56px; }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    .app { width: min(100%, 1120px); margin: 0 auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 30px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark { display: grid; width: 44px; height: 44px; place-items: center; color: #fff; background: linear-gradient(145deg, #8272ef, #5b4bc3); border-radius: 15px; box-shadow: 0 7px 16px #6959d83b; }
+    .brand-mark svg { width: 23px; height: 23px; }
+    .brand-name { font-size: 19px; font-weight: 750; letter-spacing: -.04em; }
+    .brand-subtitle { margin-top: 2px; color: var(--muted); font-size: 12px; }
+    .header-actions { display: flex; gap: 10px; }
+    .header-preferences { display: flex; gap: 9px; }
+    .preference { display: grid; gap: 4px; color: var(--muted); font-size: 10px; font-weight: 650; }
+    .preference select { min-width: 124px; min-height: 34px; padding: 5px 8px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 9px; font-size: 11px; }
+    .preference-hint { max-width: 175px; color: var(--muted); font-size: 9px; font-weight: 400; line-height: 1.4; }
+    .cloud-panel { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: -10px 0 25px; padding: 13px 15px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); }
+    .cloud-copy { min-width: 0; }
+    .cloud-status { font-size: 12px; font-weight: 700; }
+    .cloud-help { margin-top: 3px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+    .cloud-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; }
+    .cloud-button { min-height: 34px; padding: 0 11px; color: var(--ink); background: #f7f7fb; border: 1px solid var(--line); border-radius: 9px; cursor: pointer; font-size: 10px; font-weight: 650; }
+    .cloud-button.google { color: #355da8; background: #f2f6ff; }
+    .cloud-button.apple { color: #fff; background: #20243a; border-color: #20243a; }
+    .cloud-button.danger { color: #c45059; background: var(--red-light); }
+    .cloud-button:disabled { opacity: .48; cursor: not-allowed; }
+    .cloud-button:focus-visible { outline: 3px solid #a69bf6; outline-offset: 2px; }
+    .cloud-button[hidden] { display: none; }
+    .button { display: inline-flex; min-height: 43px; align-items: center; justify-content: center; gap: 8px; padding: 0 15px; border: 1px solid transparent; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 650; transition: transform .16s ease, box-shadow .16s ease, background .16s ease; }
+    .button:hover { transform: translateY(-1px); }
+    .button:focus-visible, .icon-button:focus-visible, input:focus-visible, select:focus-visible, .filter:focus-visible { outline: 3px solid #a69bf6; outline-offset: 2px; }
+    .button svg { width: 17px; height: 17px; }
+    .button-income { color: var(--green); background: var(--green-light); }
+    .button-expense { color: #fff; background: var(--purple); box-shadow: 0 6px 15px #6959d82e; }
+    .button-expense:hover { background: #5949c6; }
+    .page-title { margin: 0; font-size: clamp(24px, 4vw, 32px); font-weight: 760; letter-spacing: -.045em; }
+    .page-intro { margin: 7px 0 0; color: var(--muted); font-size: 13px; }
+    .month-bar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 25px 0 16px; }
+    .month-picker { display: flex; align-items: center; gap: 12px; }
+    .month-picker input { width: 154px; padding: 9px 10px; color: var(--ink); background: transparent; border: 0; font-size: 15px; font-weight: 700; }
+    .month-picker input::-webkit-calendar-picker-indicator { cursor: pointer; opacity: .65; }
+    .month-nav { display: flex; gap: 5px; }
+    .icon-button { display: grid; width: 35px; height: 35px; place-items: center; background: var(--paper); border: 1px solid var(--line); border-radius: 11px; cursor: pointer; }
+    .icon-button:hover { background: var(--purple-light); }
+    .icon-button svg { width: 17px; height: 17px; }
+    .month-hint { color: var(--muted); font-size: 12px; }
+    .summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 15px; }
+    .summary-card { position: relative; overflow: hidden; min-height: 145px; padding: 20px 21px; background: var(--paper); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+    .summary-card.balance { color: #fff; background: linear-gradient(135deg, #7466e5, #5749bc); border: 0; box-shadow: 0 12px 28px #6254cd38; }
+    .summary-card.balance::after { position: absolute; top: -50px; right: -34px; width: 150px; height: 150px; border: 1px solid #ffffff27; border-radius: 50%; box-shadow: 0 0 0 18px #ffffff0c, 0 0 0 38px #ffffff0a; content: ""; }
+    .card-label { position: relative; z-index: 1; display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; font-weight: 600; }
+    .balance .card-label, .balance .card-note { color: #e3dfff; }
+    .card-icon { display: grid; width: 29px; height: 29px; place-items: center; border-radius: 10px; }
+    .card-icon svg { width: 16px; height: 16px; }
+    .income .card-icon { color: var(--green); background: var(--green-light); }
+    .expenses .card-icon { color: var(--red); background: var(--red-light); }
+    .balance .card-icon { color: #fff; background: #ffffff24; }
+    .card-amount { position: relative; z-index: 1; overflow: hidden; margin-top: 17px; font-size: clamp(19px, 2.4vw, 26px); font-weight: 760; letter-spacing: -.035em; text-overflow: ellipsis; white-space: nowrap; }
+    .card-note { position: relative; z-index: 1; margin-top: 5px; color: var(--muted); font-size: 11px; }
+    .content-grid { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(255px, .85fr); gap: 16px; margin-top: 18px; align-items: start; }
+    .panel { min-width: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+    .transactions-panel { min-height: 300px; padding: 21px 21px 8px; }
+    .panel-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .panel-title { margin: 0; font-size: 15px; font-weight: 730; letter-spacing: -.025em; }
+    .entry-count { color: var(--muted); font-size: 11px; }
+    .filters { display: flex; gap: 5px; margin-top: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+    .filter { padding: 7px 11px; color: var(--muted); background: transparent; border: 0; border-radius: 9px; cursor: pointer; font-size: 11px; font-weight: 600; }
+    .filter:hover { color: var(--ink); background: #f7f7fb; }
+    .filter[aria-pressed="true"] { color: var(--purple); background: var(--purple-light); }
+    .transaction-list { margin: 0; padding: 0; list-style: none; }
+    .transaction { display: flex; min-height: 68px; align-items: center; gap: 12px; border-bottom: 1px solid #f1f1f5; }
+    .transaction:last-child { border-bottom: 0; }
+    .transaction-icon { display: grid; flex: 0 0 38px; width: 38px; height: 38px; place-items: center; border-radius: 13px; font-size: 17px; }
+    .transaction-icon.income { background: var(--green-light); }
+    .transaction-icon.expense { background: #fff2f0; }
+    .transaction-copy { min-width: 0; flex: 1; }
+    .transaction-title { overflow: hidden; font-size: 12px; font-weight: 680; text-overflow: ellipsis; white-space: nowrap; }
+    .transaction-meta { overflow: hidden; margin-top: 4px; color: var(--muted); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+    .transaction-trailing { display: flex; min-width: 0; align-items: center; gap: 6px; }
+    .transaction-amount { font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .transaction-amount.income { color: var(--green); }
+    .transaction-amount.expense { color: #d66b6f; }
+    .row-action { display: grid; width: 28px; height: 28px; place-items: center; color: var(--muted); background: transparent; border: 0; border-radius: 8px; cursor: pointer; opacity: .75; }
+    .row-action:hover { color: var(--purple); background: var(--purple-light); opacity: 1; }
+    .row-action.delete:hover { color: #d64d56; background: var(--red-light); }
+    .row-action svg { width: 15px; height: 15px; }
+    .empty { display: grid; min-height: 185px; align-content: center; justify-items: center; padding: 18px; color: var(--muted); text-align: center; }
+    .empty-icon { display: grid; width: 46px; height: 46px; place-items: center; color: var(--purple); background: var(--purple-light); border-radius: 16px; font-size: 21px; }
+    .empty strong { margin-top: 11px; color: var(--ink); font-size: 12px; }
+    .empty span { margin-top: 4px; font-size: 11px; }
+    .insights-panel { padding: 21px; }
+    .insights-title { margin: 0; font-size: 14px; font-weight: 730; }
+    .insights-subtitle { margin-top: 5px; color: var(--muted); font-size: 11px; }
+    .expense-total { margin-top: 21px; font-size: 22px; font-weight: 750; letter-spacing: -.035em; }
+    .expense-total-label { margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .category-list { display: grid; gap: 17px; margin-top: 21px; }
+    .category-row { min-width: 0; }
+    .category-top { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 7px; font-size: 10px; }
+    .category-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .category-value { color: var(--muted); white-space: nowrap; }
+    .bar-track { height: 6px; overflow: hidden; background: #f0eff5; border-radius: 10px; }
+    .bar-fill { height: 100%; background: linear-gradient(90deg, #8273ee, #a397f6); border-radius: inherit; }
+    .category-empty { padding: 20px 0 8px; color: var(--muted); font-size: 11px; line-height: 1.7; }
+    .pie-panel { margin-top: 16px; padding: 21px; }
+    .pie-heading-copy { min-width: 0; }
+    .pie-layout { display: grid; grid-template-columns: minmax(190px, 260px) minmax(0, 1fr); align-items: center; gap: 30px; margin-top: 20px; }
+    .pie-chart { position: relative; width: min(100%, 245px); aspect-ratio: 1; justify-self: center; background: #ececf2; border-radius: 50%; }
+    .pie-chart::before { position: absolute; inset: 24%; background: var(--paper); border-radius: 50%; content: ""; }
+    .pie-center { position: absolute; inset: 27%; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+    .pie-center-label { color: var(--muted); font-size: 10px; line-height: 1.5; }
+    .pie-center-total { max-width: 100%; overflow: hidden; margin-top: 5px; font-size: clamp(13px, 1.6vw, 18px); font-weight: 750; text-overflow: ellipsis; white-space: nowrap; }
+    .pie-legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px 20px; margin: 0; padding: 0; list-style: none; }
+    .pie-legend-item { display: grid; min-width: 0; grid-template-columns: 10px minmax(0, 1fr) auto; align-items: start; gap: 8px; }
+    .pie-swatch { width: 10px; height: 10px; margin-top: 3px; background: var(--slice-color); border-radius: 3px; }
+    .pie-category, .pie-stat { display: grid; min-width: 0; gap: 3px; }
+    .pie-category strong, .pie-stat strong { overflow: hidden; font-size: 10px; font-weight: 680; text-overflow: ellipsis; white-space: nowrap; }
+    .pie-category span, .pie-stat span { color: var(--muted); font-size: 9px; }
+    .pie-stat { justify-items: end; text-align: right; }
+    .pie-empty { margin-top: 14px; color: var(--muted); font-size: 11px; line-height: 1.6; text-align: center; }
+    .pie-empty[hidden] { display: none; }
+    .notice { position: fixed; right: 20px; bottom: 20px; z-index: 5; max-width: min(420px, calc(100vw - 40px)); padding: 12px 16px; color: #fff; background: #292640; border-radius: 12px; box-shadow: 0 10px 30px #18152c3b; font-size: 12px; }
+    .notice[hidden] { display: none; }
+    dialog { width: min(440px, calc(100% - 28px)); padding: 0; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 24px 70px #17172d40; }
+    dialog::backdrop { background: #2020367a; backdrop-filter: blur(3px); }
+    .dialog-inner { padding: 23px; }
+    .dialog-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; margin-bottom: 19px; }
+    .dialog-heading h2 { margin: 0; font-size: 18px; }
+    .dialog-heading p { margin: 5px 0 0; color: var(--muted); font-size: 11px; }
+    .dialog-close { display: grid; width: 32px; height: 32px; place-items: center; color: var(--muted); background: #f5f5f9; border: 0; border-radius: 10px; cursor: pointer; }
+    .type-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 4px; background: #f5f5f9; border-radius: 12px; }
+    .type-option { min-height: 37px; color: var(--muted); background: transparent; border: 0; border-radius: 9px; cursor: pointer; font-size: 12px; font-weight: 650; }
+    .type-option[aria-pressed="true"][data-type="income"] { color: var(--green); background: #fff; box-shadow: 0 2px 6px #24243a12; }
+    .type-option[aria-pressed="true"][data-type="expense"] { color: var(--purple); background: #fff; box-shadow: 0 2px 6px #24243a12; }
+    .form-fields { display: grid; gap: 14px; margin-top: 17px; }
+    .field { display: grid; gap: 6px; }
+    .field label { color: #565a6d; font-size: 11px; font-weight: 650; }
+    .field input, .field select { width: 100%; min-height: 43px; padding: 9px 11px; color: var(--ink); background: #fff; border: 1px solid #e8e8ef; border-radius: 10px; font-size: 12px; }
+    .field input::placeholder { color: #a4a6b3; }
+    .field-hint { color: var(--muted); font-size: 10px; }
+    .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 21px; }
+    .button-cancel { color: #626579; background: #f4f4f8; }
+    .button-save { color: #fff; background: var(--purple); }
+    @media (max-width: 760px) {
+      body { padding: 25px 16px 40px; }
+      .content-grid { grid-template-columns: minmax(0, 1fr); }
+      .insights-panel { order: 2; }
+      .category-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .pie-layout { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+      .pie-legend { gap: 11px 14px; }
+    }
+    @media (max-width: 520px) {
+      body { padding: 19px 13px 34px; }
+      .header { align-items: flex-start; flex-wrap: wrap; margin-bottom: 25px; }
+      .brand-mark { width: 40px; height: 40px; border-radius: 13px; }
+      .brand-name { font-size: 17px; }
+      .brand-subtitle { font-size: 10px; }
+      .header-preferences { width: 100%; }
+      .preference { flex: 1; }
+      .preference select { width: 100%; }
+      .header-actions { width: 100%; }
+      .header-actions .button { flex: 1; min-height: 36px; padding: 0 10px; border-radius: 10px; font-size: 10px; }
+      .header-actions .button svg { width: 14px; height: 14px; }
+      .cloud-panel { align-items: flex-start; flex-direction: column; margin: -8px 0 22px; }
+      .cloud-actions { justify-content: flex-start; }
+      .page-intro { max-width: 290px; line-height: 1.6; }
+      .month-bar { align-items: flex-start; }
+      .month-hint { max-width: 100px; text-align: right; line-height: 1.5; }
+      .summary { gap: 8px; }
+      .summary-card { min-height: 124px; padding: 14px 12px; border-radius: 15px; }
+      .card-label { align-items: flex-start; gap: 5px; font-size: 10px; line-height: 1.5; }
+      .card-icon { flex: 0 0 25px; width: 25px; height: 25px; border-radius: 8px; }
+      .card-icon svg { width: 14px; height: 14px; }
+      .card-amount { margin-top: 14px; font-size: clamp(15px, 4vw, 20px); }
+      .card-note { font-size: 9px; }
+      .transactions-panel, .insights-panel { padding: 17px 14px 8px; border-radius: 16px; }
+      .insights-panel { padding-bottom: 18px; }
+      .transaction { gap: 9px; }
+      .transaction-icon { flex-basis: 34px; width: 34px; height: 34px; }
+      .transaction-trailing { gap: 2px; }
+      .transaction-amount { font-size: 10px; }
+      .row-action { width: 25px; height: 27px; }
+      .category-list { gap: 14px 10px; }
+    }
+    @media (max-width: 360px) {
+      body { padding: 16px 10px 28px; }
+      .header { flex-direction: column; gap: 14px; }
+      .cloud-actions { width: 100%; }
+      .cloud-button { flex: 1; }
+      .header-preferences { flex-direction: column; gap: 9px; }
+      .header-actions { flex-direction: column; }
+      .summary { grid-template-columns: 1fr; }
+      .summary-card { min-height: 112px; }
+      .month-bar { flex-direction: column; align-items: stretch; gap: 5px; }
+      .month-picker { width: 100%; justify-content: space-between; gap: 3px; }
+      .month-picker input { width: min(170px, calc(100vw - 90px)); padding-inline: 5px; font-size: 13px; }
+      .month-nav { gap: 3px; }
+      .icon-button { width: 31px; height: 33px; }
+      .month-hint { max-width: none; text-align: right; }
+      .transactions-panel, .insights-panel { padding-right: 10px; padding-left: 10px; }
+      .transaction-trailing { gap: 0; }
+      .pie-panel { padding: 17px 12px; }
+      .pie-chart { width: min(100%, 200px); }
+      .pie-legend { grid-template-columns: 1fr; gap: 12px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 19V9m5 10V5m5 14v-7m5 7V8M2.5 19.5h19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="5" r="1" fill="currentColor"/></svg>
+        </span>
+        <div><div class="brand-name" data-i18n="brandName">මාසික</div><div class="brand-subtitle" data-i18n="brandSubtitle">ඔබේ මාසික මුදල් සැලැස්ම</div></div>
+      </div>
+      <div class="header-preferences">
+        <label class="preference"><span data-i18n="languageLabel">භාෂාව</span>
+          <select id="language-select">
+            <option value="si">සිංහල</option>
+            <option value="en">English</option>
+          </select>
+        </label>
+        <label class="preference"><span data-i18n="currencyLabel">රට / මුදල් ඒකකය</span>
+          <select id="currency-select">
+          </select>
+          <span class="preference-hint" id="currency-hint"></span>
+        </label>
+      </div>
+      <div class="header-actions">
+        <button class="button button-income" type="button" data-open-form="income">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14m-7-7h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span data-i18n="addIncome">ආදායම එක් කරන්න</span>
+        </button>
+        <button class="button button-expense" type="button" data-open-form="expense">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14m-7-7h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span data-i18n="addExpense">වියදමක් එක් කරන්න</span>
+        </button>
+      </div>
+    </header>
+
+    <section class="cloud-panel" aria-label="Cloud account" data-i18n-aria="cloudAccount">
+      <div class="cloud-copy">
+        <div class="cloud-status" id="cloud-status" role="status" aria-live="polite"></div>
+        <div class="cloud-help" id="cloud-help"></div>
+      </div>
+      <div class="cloud-actions">
+        <button class="cloud-button google" id="google-login" type="button" data-i18n="googleSignIn" disabled>Continue with Google</button>
+        <button class="cloud-button apple" id="apple-login" type="button" data-i18n="appleSignIn" disabled>Continue with Apple</button>
+        <button class="cloud-button" id="cloud-logout" type="button" data-i18n="signOut" hidden>Sign out</button>
+        <button class="cloud-button danger" id="cloud-delete" type="button" data-i18n="deleteAccount" hidden>Delete account and data</button>
+      </div>
+    </section>
+
+    <section aria-labelledby="page-title">
+      <h1 class="page-title" id="page-title" data-i18n="pageTitle">ඔබේ මාසික අයවැය</h1>
+      <p class="page-intro" data-i18n="pageIntro">ආදායම් සහ වියදම් එකම තැනක සටහන් කර ඉතිරි මුදල දැනගන්න.</p>
+    </section>
+
+    <section class="month-bar" aria-label="මාසය තෝරන්න" data-i18n-aria="monthSection">
+      <div class="month-picker">
+        <input id="month-input" type="month" aria-label="මාසය තෝරන්න" data-i18n-aria="monthSection">
+        <div class="month-nav">
+          <button class="icon-button" id="previous-month" type="button" aria-label="පෙර මාසය" data-i18n-aria="previousMonth">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m15 18-6-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="icon-button" id="next-month" type="button" aria-label="ඊළඟ මාසය" data-i18n-aria="nextMonth">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 18 6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+      <span class="month-hint" id="month-hint">මෙම මාසයේ සාරාංශය</span>
+    </section>
+
+    <section class="summary" aria-label="මාසික සාරාංශය" data-i18n-aria="monthlySummary">
+      <article class="summary-card income">
+        <div class="card-label"><span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 19V5m-6 6 6-6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span data-i18n="totalIncome">මුළු ආදායම</span></div>
+        <div class="card-amount" id="income-total">LKR 0.00</div>
+        <div class="card-note" id="income-note">මෙම මාසයේ ආදායම</div>
+      </article>
+      <article class="summary-card expenses">
+        <div class="card-label"><span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14m-6-6 6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span data-i18n="totalExpenses">මුළු වියදම</span></div>
+        <div class="card-amount" id="expense-total">LKR 0.00</div>
+        <div class="card-note" id="expense-note">මෙම මාසයේ වියදම</div>
+      </article>
+      <article class="summary-card balance">
+        <div class="card-label"><span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7.5h16v11H4zM4 7.5l2-3h12l2 3M15 13h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="13" r=".7" fill="currentColor"/></svg></span><span data-i18n="balance">ඉතිරි මුදල</span></div>
+        <div class="card-amount" id="balance-total">LKR 0.00</div>
+        <div class="card-note" id="balance-note">ආදායමෙන් වියදම් අඩු කළ පසු</div>
+      </article>
+    </section>
+
+    <div class="content-grid">
+      <section class="panel transactions-panel" aria-labelledby="transactions-title">
+        <div class="panel-heading">
+          <h2 class="panel-title" id="transactions-title" data-i18n="transactions">ගනුදෙනු</h2>
+          <span class="entry-count" id="entry-count">ගනුදෙනු 0</span>
+        </div>
+        <div class="filters" role="group" aria-label="ගනුදෙනු පෙරහන්" data-i18n-aria="transactionFilters">
+          <button class="filter" type="button" data-filter="all" aria-pressed="true" data-i18n="all">සියල්ල</button>
+          <button class="filter" type="button" data-filter="income" aria-pressed="false" data-i18n="incomes">ආදායම්</button>
+          <button class="filter" type="button" data-filter="expense" aria-pressed="false" data-i18n="expenses">වියදම්</button>
+        </div>
+        <ul class="transaction-list" id="transaction-list"></ul>
+      </section>
+
+      <aside class="panel insights-panel" aria-labelledby="insights-title">
+        <h2 class="insights-title" id="insights-title" data-i18n="expenseDetails">වියදම් විස්තර</h2>
+        <div class="insights-subtitle" data-i18n="expenseBreakdown">වර්ගය අනුව මේ මාසයේ වියදම්</div>
+        <div class="expense-total" id="insights-total">LKR 0.00</div>
+        <div class="expense-total-label" data-i18n="totalExpenses">මුළු වියදම</div>
+        <div class="category-list" id="category-list"></div>
+      </aside>
+    </div>
+
+    <section class="panel pie-panel" aria-labelledby="pie-title">
+      <div class="panel-heading">
+        <div class="pie-heading-copy">
+          <h2 class="panel-title" id="pie-title" data-i18n="pieTitle">ආදායම් හා වියදම් වෘත්ත සටහන</h2>
+          <div class="insights-subtitle" data-i18n="pieSubtitle">මෙම මාසයේ සියලු ගනුදෙනු වර්ග අනුව</div>
+        </div>
+      </div>
+      <div class="pie-layout">
+        <div class="pie-chart" id="pie-chart" role="img" aria-label="ආදායම් හා වියදම් වෘත්ත සටහන">
+          <div class="pie-center" aria-hidden="true">
+            <span class="pie-center-label" data-i18n="pieCenterLabel">ආදායම + වියදම</span>
+            <strong class="pie-center-total" id="pie-total">LKR 0.00</strong>
+          </div>
+        </div>
+        <ul class="pie-legend" id="pie-legend"></ul>
+      </div>
+      <div class="pie-empty" id="pie-empty" data-i18n="pieEmpty" hidden>වෘත්ත සටහන බැලීමට මේ මාසයට ආදායමක් හෝ වියදමක් එක් කරන්න.</div>
+    </section>
+  </main>
+
+  <div class="notice" id="notice" role="status" aria-live="polite" hidden></div>
+
+  <dialog id="entry-dialog" aria-labelledby="dialog-title">
+    <form class="dialog-inner" id="entry-form">
+      <div class="dialog-heading">
+        <div><h2 id="dialog-title">ගනුදෙනුවක් එක් කරන්න</h2><p data-i18n="dialogIntro">ඔබේ ආදායම හෝ වියදම සටහන් කරන්න.</p></div>
+        <button class="dialog-close" type="button" id="close-dialog" aria-label="වසන්න" data-i18n-aria="close">✕</button>
+      </div>
+      <div class="type-switch" role="group" aria-label="ගනුදෙනු වර්ගය" data-i18n-aria="transactionType">
+        <button class="type-option" type="button" data-type="expense" aria-pressed="true" data-i18n="expense">වියදම</button>
+        <button class="type-option" type="button" data-type="income" aria-pressed="false" data-i18n="income">ආදායම</button>
+      </div>
+      <div class="form-fields">
+        <div class="field">
+          <label for="entry-title" data-i18n="description">විස්තරය</label>
+          <input id="entry-title" name="title" type="text" maxlength="70" placeholder="උදා: මාසික වැටුප, විදුලි බිල" data-i18n-placeholder="descriptionPlaceholder" required>
+        </div>
+        <div class="field">
+          <label for="entry-category" data-i18n="category">වර්ගය</label>
+          <select id="entry-category" name="category" required></select>
+        </div>
+        <div class="field">
+          <label for="entry-amount" id="amount-label">මුදල (LKR)</label>
+          <input id="entry-amount" name="amount" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="0.00" required>
+        </div>
+        <div class="field">
+          <label for="entry-date" data-i18n="date">දිනය</label>
+          <input id="entry-date" name="date" type="date" required>
+          <span class="field-hint" data-i18n="dateHint">මාසික සාරාංශයට අදාල දිනය භාවිතා වේ.</span>
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <button class="button button-cancel" type="button" id="cancel-dialog" data-i18n="cancel">අවලංගු කරන්න</button>
+        <button class="button button-save" type="submit" id="save-entry">සුරකින්න</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const STORAGE_KEY = "masika-budget-entries-v1";
+      const PREFERENCES_KEY = "masika-budget-preferences-v1";
+      const SYNC_STATE_KEY = "masika-budget-sync-state-v1";
+      const SYNC_OWNER_KEY = "masika-budget-sync-owner-v1";
+      const translations = {
+        si: {
+          brandName: "මාසික", brandSubtitle: "ඔබේ මාසික මුදල් සැලැස්ම", languageLabel: "භාෂාව", currencyLabel: "රට / මුදල් ඒකකය",
+          addIncome: "ආදායම එක් කරන්න", addExpense: "වියදමක් එක් කරන්න", pageTitle: "ඔබේ මාසික අයවැය",
+          pageIntro: "ආදායම් සහ වියදම් එකම තැනක සටහන් කර ඉතිරි මුදල දැනගන්න.",
+          monthSection: "මාසය තෝරන්න", previousMonth: "පෙර මාසය", nextMonth: "ඊළඟ මාසය",
+          monthSummary: (month) => `මෙම මාසයේ සාරාංශය · ${month}`, monthlySummary: "මාසික සාරාංශය", totalIncome: "මුළු ආදායම",
+          totalExpenses: "මුළු වියදම", balance: "ඉතිරි මුදල",
+          incomeCount: (count) => `ආදායම් සටහන් ${count}ක්`, expenseCount: (count) => `වියදම් සටහන් ${count}ක්`,
+          balanceNegative: "වියදම් ආදායම ඉක්මවා ඇත", balancePositive: "ආදායමෙන් වියදම් අඩු කළ පසු",
+          transactions: "ගනුදෙනු", transactionCount: (count) => `ගනුදෙනු ${count}`,
+          transactionFilters: "ගනුදෙනු පෙරහන්", all: "සියල්ල", incomes: "ආදායම්", expenses: "වියදම්",
+          expenseDetails: "වියදම් විස්තර", expenseBreakdown: "වර්ගය අනුව මේ මාසයේ වියදම්",
+          emptyCategory: "මෙම මාසයේ වියදම් සටහන් කළ විට ඒවායේ විස්තර මෙහි පෙන්වනු ඇත.",
+          noMatchingEntries: "මෙම පෙරහනට ගැළපෙන ගනුදෙනු නැත.", noEntries: "මේ මාසයට තවම ගනුදෙනු නැත.",
+          getStarted: "ආදායමක් හෝ වියදමක් එකතු කිරීමෙන් ආරම්භ කරන්න.",
+          addEntryTitle: "ගනුදෙනුවක් එක් කරන්න", editDialogTitle: "ගනුදෙනුව සංස්කරණය කරන්න",
+          dialogIntro: "ඔබේ ආදායම හෝ වියදම සටහන් කරන්න.", close: "වසන්න",
+          transactionType: "ගනුදෙනු වර්ගය", expense: "වියදම", income: "ආදායම",
+          description: "විස්තරය", descriptionPlaceholder: "උදා: මාසික වැටුප, විදුලි බිල",
+          category: "වර්ගය", amount: (currency) => `මුදල (${currency})`, date: "දිනය",
+          dateHint: "මාසික සාරාංශයට අදාල දිනය භාවිතා වේ.", cancel: "අවලංගු කරන්න",
+          save: "සුරකින්න", saveChanges: "වෙනස්කම් සුරකින්න",
+          editAction: "සංස්කරණය කරන්න", deleteAction: "මකන්න",
+          editEntry: (title) => `${title} සංස්කරණය කරන්න`, deleteEntry: (title) => `${title} මකන්න`,
+          confirmDelete: (title) => `"${title}" මකා දමන්නද?`,
+          validationError: "කරුණාකර විස්තර, දිනය සහ නිවැරදි මුදල ඇතුළත් කරන්න.",
+          readError: "සුරැකි දත්ත කියවිය නොහැකි විය. බ්‍රවුසරයේ ගබඩාව පරීක්ෂා කරන්න.",
+          saveError: "දත්ත සුරැකිය නොහැකි විය. බ්‍රවුසරයේ ඉඩ තිබේදැයි පරීක්ෂා කරන්න.",
+          preferencesError: "සැකසුම් සුරැකිය නොහැකි විය.", preferencesReadError: "සුරැකි සැකසුම් කියවිය නොහැකි විය.",
+          saved: "ගනුදෙනුව සුරැකුවා.", updated: "ගනුදෙනුව යාවත්කාලීන කළා.", deleted: "ගනුදෙනුව මකා දැමුවා.",
+          currencyHint: "මුදල් ඒකකය වෙනස් කිරීමෙන් අගයන් පරිවර්තනය නොවේ.",
+          pieTitle: "ආදායම් හා වියදම් වෘත්ත සටහන",
+          pieSubtitle: "මෙම මාසයේ සියලු ගනුදෙනු වර්ග අනුව",
+          pieCenterLabel: "ආදායම + වියදම",
+          pieEmpty: "වෘත්ත සටහන බැලීමට මේ මාසයට ආදායමක් හෝ වියදමක් එක් කරන්න.",
+          pieAria: (count, total) => `ආදායම් හා වියදම් වර්ග ${count}ක්, එකතුව ${total}`,
+          shareOfTotal: (share) => `මුළු එකතුවෙන් ${share}`,
+          cloudChecking: "ගිණුම් සැකසුම පරීක්ෂා කරමින්...",
+          cloudAccount: "Cloud ගිණුම",
+          cloudLocal: "දත්ත මෙම උපාංගයේ පමණක් සුරැකේ",
+          cloudLocalHelp: "Cloud sync සඳහා Firebase ව්‍යාපෘති සැකසුම අවශ්‍යයි.",
+          googleSignIn: "Google සමඟ පිවිසෙන්න", appleSignIn: "Apple සමඟ පිවිසෙන්න",
+          linkGoogle: "Google ගිණුම සම්බන්ධ කරන්න", linkApple: "Apple ගිණුම සම්බන්ධ කරන්න",
+          signOut: "ඉවත් වන්න", deleteAccount: "ගිණුම සහ cloud දත්ත මකන්න",
+          cloudConfigured: "Cloud ගිණුමට පිවිසෙන්න",
+          cloudConfiguredHelp: "ඔබේ budget එක ඔබේ account එකට පමණක් sync වේ.",
+          cloudUser: (email) => `${email} ලෙස පිවිසී ඇත`,
+          cloudSyncing: "Budget එක cloud එකට sync කරමින්...",
+          cloudSynced: "Budget එක cloud එක සමඟ sync වී ඇත.",
+          cloudConfigMissing: "Firebase සැකසුම නැති නිසා cloud login තාවකාලිකව අක්‍රියයි.",
+          cloudError: "Cloud sync අසාර්ථක විය. අන්තර්ජාලය සහ Firebase සැකසුම් පරීක්ෂා කරන්න.",
+          cloudLoginError: "පිවිසීම අසාර්ථක විය. Firebase provider සහ domain සැකසුම් පරීක්ෂා කරන්න.",
+          cloudImportConfirm: (count, email) => `මෙම උපාංගයේ ගනුදෙනු ${count}ක් ${email} cloud account එකට merge කර sync කරන්නද?`,
+          cloudImportCancelled: "Cloud sync අවලංගු කළා. මෙම උපාංගයේ දත්ත වෙනස් කර නැත.",
+          deleteAccountConfirm: "ඔබගේ Firebase ගිණුම සහ එයට අයත් cloud budget දත්ත මකා දමන්නද? මෙම ක්‍රියාව ආපසු හැරවිය නොහැක.",
+          accountDeleted: "ගිණුම සහ cloud දත්ත මකා දැමුවා.",
+          accountDeleteError: "ගිණුම මකා දැමිය නොහැකි විය. නැවත පිවිසීම අවශ්‍ය විය හැක."
+        },
+        en: {
+          brandName: "Masika", brandSubtitle: "Your monthly money plan", languageLabel: "Language", currencyLabel: "Country / currency",
+          addIncome: "Add income", addExpense: "Add expense", pageTitle: "Your monthly budget",
+          pageIntro: "Track your income and expenses in one place and see what remains.",
+          monthSection: "Choose month", previousMonth: "Previous month", nextMonth: "Next month",
+          monthSummary: (month) => `Monthly summary · ${month}`, monthlySummary: "Monthly summary", totalIncome: "Total income",
+          totalExpenses: "Total expenses", balance: "Remaining balance",
+          incomeCount: (count) => `${count} income entr${count === 1 ? "y" : "ies"}`,
+          expenseCount: (count) => `${count} expense entr${count === 1 ? "y" : "ies"}`,
+          balanceNegative: "Expenses are higher than income", balancePositive: "Income minus expenses",
+          transactions: "Transactions", transactionCount: (count) => `${count} transaction${count === 1 ? "" : "s"}`,
+          transactionFilters: "Filter transactions", all: "All", incomes: "Income", expenses: "Expenses",
+          expenseDetails: "Expense breakdown", expenseBreakdown: "This month's spending by category",
+          emptyCategory: "Your spending by category will appear here once you add expenses.",
+          noMatchingEntries: "No transactions match this filter.", noEntries: "No transactions for this month yet.",
+          getStarted: "Get started by adding income or an expense.",
+          addEntryTitle: "Add a transaction", editDialogTitle: "Edit transaction",
+          dialogIntro: "Record income or an expense.", close: "Close",
+          transactionType: "Transaction type", expense: "Expense", income: "Income",
+          description: "Description", descriptionPlaceholder: "e.g. Monthly salary, electricity bill",
+          category: "Category", amount: (currency) => `Amount (${currency})`, date: "Date",
+          dateHint: "The selected date determines which month includes this entry.", cancel: "Cancel",
+          save: "Save", saveChanges: "Save changes",
+          editAction: "Edit", deleteAction: "Delete",
+          editEntry: (title) => `Edit ${title}`, deleteEntry: (title) => `Delete ${title}`,
+          confirmDelete: (title) => `Delete "${title}"?`,
+          validationError: "Enter a description, date, and a valid amount.",
+          readError: "Could not read saved data. Check your browser storage.",
+          saveError: "Could not save your data. Check available browser storage.",
+          preferencesError: "Could not save your preferences.", preferencesReadError: "Could not read saved preferences.",
+          saved: "Transaction saved.", updated: "Transaction updated.", deleted: "Transaction deleted.",
+          currencyHint: "Changing currency changes the displayed unit only; amounts are not converted.",
+          pieTitle: "Income and expense pie chart",
+          pieSubtitle: "All transaction categories for this month",
+          pieCenterLabel: "Income + expenses",
+          pieEmpty: "Add income or expenses for this month to see the pie chart.",
+          pieAria: (count, total) => `${count} income and expense categories, totaling ${total}`,
+          shareOfTotal: (share) => `${share} of total`,
+          cloudChecking: "Checking account setup...",
+          cloudAccount: "Cloud account",
+          cloudLocal: "Data is stored on this device only",
+          cloudLocalHelp: "Cloud sync requires Firebase project configuration.",
+          googleSignIn: "Continue with Google", appleSignIn: "Continue with Apple",
+          linkGoogle: "Link Google account", linkApple: "Link Apple account",
+          signOut: "Sign out", deleteAccount: "Delete account and cloud data",
+          cloudConfigured: "Sign in to sync your budget",
+          cloudConfiguredHelp: "Your budget syncs only to your account.",
+          cloudUser: (email) => `Signed in as ${email}`,
+          cloudSyncing: "Syncing your budget...",
+          cloudSynced: "Your budget is synced with the cloud.",
+          cloudConfigMissing: "Cloud sign-in is disabled until Firebase is configured.",
+          cloudError: "Cloud sync failed. Check your connection and Firebase setup.",
+          cloudLoginError: "Sign-in failed. Check Firebase provider and authorized-domain settings.",
+          cloudImportConfirm: (count, email) => `Merge and sync ${count} transactions on this device with ${email}'s cloud account?`,
+          cloudImportCancelled: "Cloud sync was cancelled. This device's data was not changed.",
+          deleteAccountConfirm: "Delete your Firebase account and its cloud budget data? This cannot be undone.",
+          accountDeleted: "Account and cloud data deleted.",
+          accountDeleteError: "Could not delete the account. You may need to sign in again."
+        }
+      };
+      const categoryLabels = {
+        salary: { type: "income", si: "වැටුප", en: "Salary" },
+        extraIncome: { type: "income", si: "අමතර ආදායම", en: "Extra income" },
+        business: { type: "income", si: "ව්‍යාපාර", en: "Business" },
+        investments: { type: "income", si: "ආයෝජන", en: "Investments" },
+        gifts: { type: "income", si: "තෑගි", en: "Gifts" },
+        otherIncome: { type: "income", si: "වෙනත් ආදායම", en: "Other income" },
+        food: { type: "expense", si: "ආහාර", en: "Food" },
+        transport: { type: "expense", si: "ගමන්", en: "Transport" },
+        housing: { type: "expense", si: "නිවාස", en: "Housing" },
+        bills: { type: "expense", si: "බිල්පත්", en: "Bills" },
+        health: { type: "expense", si: "සෞඛ්‍ය", en: "Healthcare" },
+        education: { type: "expense", si: "අධ්‍යාපනය", en: "Education" },
+        shopping: { type: "expense", si: "සාප්පු සවාරි", en: "Shopping" },
+        entertainment: { type: "expense", si: "විනෝදාස්වාදය", en: "Entertainment" },
+        debt: { type: "expense", si: "ණය ගෙවීම්", en: "Debt payments" },
+        otherExpense: { type: "expense", si: "වෙනත් වියදම", en: "Other expense" }
+      };
+      const categories = {
+        income: Object.keys(categoryLabels).filter((key) => categoryLabels[key].type === "income"),
+        expense: Object.keys(categoryLabels).filter((key) => categoryLabels[key].type === "expense")
+      };
+      const categoryIcons = {
+        salary: "💼", extraIncome: "✨", business: "🏪", investments: "📈", gifts: "🎁", otherIncome: "💰",
+        food: "🍜", transport: "🚌", housing: "🏠", bills: "🧾", health: "💊", education: "📚",
+        shopping: "🛍️", entertainment: "🎧", debt: "💳", otherExpense: "📌"
+      };
+      const categoryColors = {
+        salary: "#2b9b78", extraIncome: "#35b3a5", business: "#478fc1", investments: "#4b75cf",
+        gifts: "#6d75d2", otherIncome: "#8580bf", food: "#e77562", transport: "#e99a50",
+        housing: "#d8a832", bills: "#bd7952", health: "#c56d91", education: "#a56cba",
+        shopping: "#886bc6", entertainment: "#6f7fb9", debt: "#5e7d99", otherExpense: "#718d7e"
+      };
+      const currencyOptions = {
+        LKR: { si: "ශ්‍රී ලංකාව", en: "Sri Lanka", flag: "🇱🇰", locale: "en-LK" },
+        INR: { si: "ඉන්දියාව", en: "India", flag: "🇮🇳", locale: "en-IN" },
+        USD: { si: "එක්සත් ජනපදය", en: "United States", flag: "🇺🇸", locale: "en-US" },
+        GBP: { si: "එක්සත් රාජධානිය", en: "United Kingdom", flag: "🇬🇧", locale: "en-GB" },
+        EUR: { si: "යුරෝ කලාපය", en: "Eurozone", flag: "🇪🇺", locale: "en-IE" },
+        JPY: { si: "ජපානය", en: "Japan", flag: "🇯🇵", locale: "en-JP" },
+        AED: { si: "එක්සත් අරාබි එමීර්", en: "United Arab Emirates", flag: "🇦🇪", locale: "en-AE" },
+        AUD: { si: "ඕස්ට්‍රේලියාව", en: "Australia", flag: "🇦🇺", locale: "en-AU" },
+        CAD: { si: "කැනඩාව", en: "Canada", flag: "🇨🇦", locale: "en-CA" }
+      };
+      const legacyCategoryKeys = new Map();
+      Object.entries(categoryLabels).forEach(([key, labels]) => {
+        legacyCategoryKeys.set(labels.si, key);
+        legacyCategoryKeys.set(labels.en, key);
+      });
+      const $ = (selector) => document.querySelector(selector);
+      const monthInput = $("#month-input");
+      const languageSelect = $("#language-select");
+      const currencySelect = $("#currency-select");
+      const dialog = $("#entry-dialog");
+      const form = $("#entry-form");
+      const notice = $("#notice");
+      let preferencesReadFailed = false;
+      let preferences = loadPreferences();
+      let selectedMonth = todayIso().slice(0, 7);
+      let activeFilter = "all";
+      let editingId = null;
+      let selectedType = "expense";
+      let noticeTimer;
+      let entries = loadEntries();
+      let syncState = loadSyncState();
+      let cloudConfigured = false;
+      let cloudBusy = false;
+      let cloudUser = null;
+      let cloudSyncReadyUid = null;
+      let cloudStatusKey = "cloudChecking";
+      let pendingPreviousSyncState = null;
+      let pendingPreviousSyncOwner = null;
+
+      function loadSyncState() {
+        try {
+          const parsed = JSON.parse(localStorage.getItem(SYNC_STATE_KEY) || "{}");
+          const source = parsed && parsed.tombstones && typeof parsed.tombstones === "object"
+            ? parsed.tombstones
+            : {};
+          const tombstones = {};
+          Object.entries(source).forEach(([id, timestamp]) => {
+            if (id && Number.isFinite(timestamp) && timestamp > 0) tombstones[id] = timestamp;
+          });
+          return { tombstones };
+        } catch (error) {
+          console.error("Could not load cloud sync metadata:", error);
+          return { tombstones: {} };
+        }
+      }
+
+      function writeLocalBudget(nextEntries, nextTombstones, ownerUid) {
+        let previousEntries;
+        let previousSyncState;
+        let previousOwner;
+        try {
+          previousEntries = localStorage.getItem(STORAGE_KEY);
+          previousSyncState = localStorage.getItem(SYNC_STATE_KEY);
+          previousOwner = localStorage.getItem(SYNC_OWNER_KEY);
+        } catch (error) {
+          showNotice(t("saveError"));
+          console.error("Could not read local budget storage before saving:", error);
+          return false;
+        }
+
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(nextEntries));
+          localStorage.setItem(SYNC_STATE_KEY, JSON.stringify({ tombstones: nextTombstones }));
+          if (ownerUid !== undefined) localStorage.setItem(SYNC_OWNER_KEY, ownerUid);
+        } catch (error) {
+          try {
+            if (previousEntries === null) localStorage.removeItem(STORAGE_KEY);
+            else localStorage.setItem(STORAGE_KEY, previousEntries);
+            if (previousSyncState === null) localStorage.removeItem(SYNC_STATE_KEY);
+            else localStorage.setItem(SYNC_STATE_KEY, previousSyncState);
+            if (previousOwner === null) localStorage.removeItem(SYNC_OWNER_KEY);
+            else localStorage.setItem(SYNC_OWNER_KEY, previousOwner);
+          } catch (rollbackError) {
+            console.error("Could not restore local budget storage after a failed save:", rollbackError);
+          }
+          showNotice(t("saveError"));
+          console.error("Could not save budget entries:", error);
+          return false;
+        }
+        syncState = { tombstones: nextTombstones };
+        return true;
+      }
+
+      function loadPreferences() {
+        try {
+          const saved = localStorage.getItem(PREFERENCES_KEY);
+          if (!saved) return { language: "si", currency: "LKR" };
+          const parsed = JSON.parse(saved);
+          if (!parsed || !["si", "en"].includes(parsed.language) || !currencyOptions[parsed.currency]) {
+            throw new Error("Saved preferences have an unexpected format.");
+          }
+          return { language: parsed.language, currency: parsed.currency };
+        } catch (error) {
+          preferencesReadFailed = true;
+          console.error("Could not load preferences:", error);
+          return { language: "si", currency: "LKR" };
+        }
+      }
+
+      function loadEntries() {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (!saved) return [];
+          const parsed = JSON.parse(saved);
+          if (!Array.isArray(parsed) || parsed.some((entry) =>
+            !entry || typeof entry.id !== "string" ||
+            !["income", "expense"].includes(entry.type) ||
+            typeof entry.title !== "string" || typeof entry.category !== "string" ||
+            !Number.isFinite(entry.amount) || entry.amount <= 0 ||
+            !/^\d{4}-\d{2}-\d{2}$/.test(entry.date)
+          )) throw new Error("Saved budget data has an unexpected format.");
+          return parsed.map((entry) => {
+            const category = categoryLabels[entry.category]
+              ? entry.category
+              : legacyCategoryKeys.get(entry.category);
+            if (!category || categoryLabels[category].type !== entry.type) {
+              throw new Error("A saved transaction has an unknown category.");
+            }
+            return { ...entry, category };
+          });
+        } catch (error) {
+          showNotice(t("readError"));
+          console.error("Could not load budget entries:", error);
+          return [];
+        }
+      }
+
+      function savePreferences(nextPreferences) {
+        try {
+          localStorage.setItem(PREFERENCES_KEY, JSON.stringify(nextPreferences));
+        } catch (error) {
+          showNotice(t("preferencesError"));
+          console.error("Could not save preferences:", error);
+          applyTranslations();
+          return false;
+        }
+        preferences = nextPreferences;
+        applyTranslations();
+        updateCategories(selectedType, $("#entry-category").value);
+        render();
+        return true;
+      }
+
+      function persist(nextEntries, nextTombstones) {
+        const tombstones = nextTombstones || syncState.tombstones;
+        if (!writeLocalBudget(nextEntries, tombstones)) return false;
+        entries = nextEntries;
+        render();
+        if (cloudUser && cloudSyncReadyUid === cloudUser.uid) {
+          syncCloudBudget(entries, syncState.tombstones);
+        }
+        return true;
+      }
+
+      function showNotice(text) {
+        notice.textContent = text;
+        notice.hidden = false;
+        window.clearTimeout(noticeTimer);
+        noticeTimer = window.setTimeout(() => { notice.hidden = true; }, 4200);
+      }
+
+      function t(key, ...args) {
+        const message = translations[preferences.language][key];
+        return typeof message === "function" ? message(...args) : message;
+      }
+
+      function activeLocale() {
+        return preferences.language === "si" ? "si-LK" : currencyOptions[preferences.currency].locale;
+      }
+
+      function formatMoney(amount) {
+        return new Intl.NumberFormat(activeLocale(), {
+          style: "currency",
+          currency: preferences.currency
+        }).format(amount);
+      }
+
+      function categoryLabel(key) {
+        return categoryLabels[key][preferences.language];
+      }
+
+      function renderCloudPanel() {
+        const googleButton = $("#google-login");
+        const appleButton = $("#apple-login");
+        const signedIn = Boolean(cloudUser);
+        const providerIds = signedIn ? cloudUser.providerIds || [] : [];
+        googleButton.disabled = !cloudConfigured || cloudBusy;
+        appleButton.disabled = !cloudConfigured || cloudBusy;
+        googleButton.hidden = signedIn && providerIds.includes("google.com");
+        appleButton.hidden = signedIn && providerIds.includes("apple.com");
+        googleButton.textContent = t(signedIn ? "linkGoogle" : "googleSignIn");
+        appleButton.textContent = t(signedIn ? "linkApple" : "appleSignIn");
+        $("#cloud-logout").hidden = !signedIn;
+        $("#cloud-delete").hidden = !signedIn;
+        $("#cloud-logout").disabled = cloudBusy;
+        $("#cloud-delete").disabled = cloudBusy;
+        const status = $("#cloud-status");
+        status.textContent = signedIn
+          ? `${t("cloudUser", cloudUser.email || cloudUser.displayName || "account")} · ${t(cloudStatusKey)}`
+          : t(cloudStatusKey);
+        $("#cloud-help").textContent = t(signedIn || cloudConfigured ? "cloudConfiguredHelp" : "cloudConfigMissing");
+      }
+
+      function budgetSignature(data) {
+        const normalizedEntries = data.entries
+          .map((entry) => [entry.id, entry.type, entry.title, entry.category, entry.amount, entry.date, Number(entry.updatedAt) || 0])
+          .sort((left, right) => left[0].localeCompare(right[0]));
+        const normalizedTombstones = Object.entries(data.tombstones)
+          .sort((left, right) => left[0].localeCompare(right[0]));
+        return JSON.stringify({ entries: normalizedEntries, tombstones: normalizedTombstones });
+      }
+
+      function mergeCloudData(localEntries, localTombstones, remoteData) {
+        const entriesById = new Map();
+        [...(remoteData.entries || []), ...localEntries].forEach((entry) => {
+          if (!entry || typeof entry.id !== "string" ||
+              !["income", "expense"].includes(entry.type) ||
+              typeof entry.title !== "string" ||
+              !categoryLabels[entry.category] ||
+              categoryLabels[entry.category].type !== entry.type ||
+              !Number.isFinite(entry.amount) || entry.amount <= 0 ||
+              !/^\d{4}-\d{2}-\d{2}$/.test(entry.date)) return;
+          const current = entriesById.get(entry.id);
+          if (!current || (Number(entry.updatedAt) || 0) >= (Number(current.updatedAt) || 0)) {
+            entriesById.set(entry.id, { ...entry, updatedAt: Number(entry.updatedAt) || 0 });
+          }
+        });
+
+        const tombstones = {};
+        [remoteData.tombstones || {}, localTombstones].forEach((source) => {
+          Object.entries(source).forEach(([id, timestamp]) => {
+            if (id && Number.isFinite(Number(timestamp))) {
+              tombstones[id] = Math.max(Number(tombstones[id]) || 0, Number(timestamp));
+            }
+          });
+        });
+        const mergedEntries = [...entriesById.values()]
+          .filter((entry) => entry.updatedAt > (Number(tombstones[entry.id]) || 0))
+          .sort((left, right) => left.id.localeCompare(right.id));
+        return { entries: mergedEntries, tombstones };
+      }
+
+      function saveSyncedBudget(data, ownerUid) {
+        if (!writeLocalBudget(data.entries, data.tombstones, ownerUid)) return false;
+        entries = data.entries;
+        pendingPreviousSyncState = null;
+        pendingPreviousSyncOwner = null;
+        render();
+        return true;
+      }
+
+      let queuedCloudSync = null;
+      async function syncCloudBudget(nextEntries, nextTombstones) {
+        if (!cloudUser || cloudSyncReadyUid !== cloudUser.uid || !window.masikaCloud?.syncBudget) return;
+        const payload = {
+          uid: cloudUser.uid,
+          entries: nextEntries,
+          tombstones: nextTombstones
+        };
+        if (cloudBusy) {
+          queuedCloudSync = payload;
+          return;
+        }
+        cloudBusy = true;
+        cloudStatusKey = "cloudSyncing";
+        renderCloudPanel();
+        try {
+          const remoteMerge = await window.masikaCloud.syncBudget(payload.entries, payload.tombstones);
+          const merged = mergeCloudData(payload.entries, payload.tombstones, remoteMerge);
+          if (cloudUser && cloudUser.uid === payload.uid) {
+            cloudStatusKey = saveSyncedBudget(merged, payload.uid) ? "cloudSynced" : "cloudError";
+          }
+        } catch (error) {
+          console.error("Cloud budget sync failed:", error);
+          if (cloudUser && cloudUser.uid === payload.uid) {
+            cloudStatusKey = "cloudError";
+            showNotice(t("cloudError"));
+          }
+        } finally {
+          cloudBusy = false;
+          renderCloudPanel();
+          if (queuedCloudSync) {
+            const queued = queuedCloudSync;
+            queuedCloudSync = null;
+            if (cloudUser && queued.uid === cloudUser.uid) {
+              window.setTimeout(() => syncCloudBudget(queued.entries, queued.tombstones), 0);
+            }
+          }
+        }
+      }
+
+      async function handleCloudAuthState(user) {
+        cloudUser = user;
+        cloudSyncReadyUid = null;
+        if (!user) {
+          if (pendingPreviousSyncState) {
+            try {
+              if (localStorage.getItem(SYNC_OWNER_KEY) === pendingPreviousSyncOwner) {
+                syncState = pendingPreviousSyncState;
+              }
+            } catch (error) {
+              console.error("Could not restore the previous cloud sync metadata:", error);
+            }
+            pendingPreviousSyncState = null;
+            pendingPreviousSyncOwner = null;
+          }
+          cloudStatusKey = cloudConfigured ? "cloudConfigured" : "cloudLocal";
+          renderCloudPanel();
+          return;
+        }
+        cloudStatusKey = "cloudSyncing";
+        renderCloudPanel();
+        let previousOwner = null;
+        try {
+          previousOwner = localStorage.getItem(SYNC_OWNER_KEY);
+        } catch (error) {
+          console.error("Could not read the previous cloud account:", error);
+        }
+        const differentAccount = previousOwner !== user.uid;
+        if (differentAccount && entries.length &&
+            !window.confirm(t("cloudImportConfirm", entries.length, user.email || user.uid))) {
+          cloudUser = null;
+          cloudStatusKey = "cloudConfigured";
+          renderCloudPanel();
+          showNotice(t("cloudImportCancelled"));
+          try {
+            await window.masikaCloud.signOut();
+          } catch (error) {
+            console.error("Could not sign out after cancelling cloud import:", error);
+          }
+          return;
+        }
+        if (differentAccount) {
+          pendingPreviousSyncState = syncState;
+          pendingPreviousSyncOwner = previousOwner;
+          syncState = { tombstones: {} };
+        }
+        const now = Date.now();
+        const initialEntries = entries.map((entry) => ({
+          ...entry,
+          updatedAt: differentAccount ? now : (Number(entry.updatedAt) || now)
+        }));
+        const initialTombstones = differentAccount ? {} : syncState.tombstones;
+        cloudSyncReadyUid = user.uid;
+        await syncCloudBudget(initialEntries, initialTombstones);
+      }
+
+      function handleCloudSnapshot(event) {
+        const { uid, data } = event.detail;
+        if (!cloudUser || uid !== cloudSyncReadyUid || uid !== cloudUser.uid) return;
+        const merged = mergeCloudData(entries, syncState.tombstones, data);
+        const remote = mergeCloudData([], {}, data);
+        if (budgetSignature(merged) !== budgetSignature({ entries, tombstones: syncState.tombstones })) {
+          if (!saveSyncedBudget(merged, uid)) return;
+        }
+        if (budgetSignature(merged) !== budgetSignature(remote)) {
+          syncCloudBudget(merged.entries, merged.tombstones);
+        } else {
+          cloudStatusKey = "cloudSynced";
+          renderCloudPanel();
+        }
+      }
+
+      function applyTranslations() {
+        const language = preferences.language;
+        document.documentElement.lang = language;
+        document.querySelectorAll("[data-i18n]").forEach((element) => {
+          element.textContent = t(element.dataset.i18n);
+        });
+        document.querySelectorAll("[data-i18n-aria]").forEach((element) => {
+          element.setAttribute("aria-label", t(element.dataset.i18nAria));
+        });
+        document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
+          element.placeholder = t(element.dataset.i18nPlaceholder);
+        });
+        $("#amount-label").textContent = t("amount", preferences.currency);
+        languageSelect.value = language;
+        currencySelect.innerHTML = Object.entries(currencyOptions).map(([code, option]) =>
+          `<option value="${code}">${option.flag} ${escapeHtml(option[language])} · ${code}</option>`
+        ).join("");
+        currencySelect.value = preferences.currency;
+        $("#currency-hint").textContent = t("currencyHint");
+        $("#entry-amount").step = preferences.currency === "JPY" ? "1" : "0.01";
+        $("#entry-amount").min = preferences.currency === "JPY" ? "1" : "0.01";
+        document.title = `${t("brandName")} — ${t("pageTitle")}`;
+        renderCloudPanel();
+      }
+
+      function escapeHtml(text) {
+        return String(text).replace(/[&<>"']/g, (character) => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+        })[character]);
+      }
+
+      function getMonthEntries() {
+        return entries.filter((entry) => entry.date.slice(0, 7) === selectedMonth);
+      }
+
+      function renderSummary(monthEntries) {
+        const income = monthEntries.filter((entry) => entry.type === "income").reduce((sum, entry) => sum + entry.amount, 0);
+        const expenses = monthEntries.filter((entry) => entry.type === "expense").reduce((sum, entry) => sum + entry.amount, 0);
+        const balance = income - expenses;
+        $("#income-total").textContent = formatMoney(income);
+        $("#expense-total").textContent = formatMoney(expenses);
+        $("#balance-total").textContent = formatMoney(balance);
+        $("#insights-total").textContent = formatMoney(expenses);
+        $("#income-note").textContent = t("incomeCount", monthEntries.filter((entry) => entry.type === "income").length);
+        $("#expense-note").textContent = t("expenseCount", monthEntries.filter((entry) => entry.type === "expense").length);
+        $("#balance-note").textContent = balance < 0 ? t("balanceNegative") : t("balancePositive");
+        $("#balance-total").style.color = balance < 0 ? "#ffe0df" : "";
+        const monthFormat = new Intl.DateTimeFormat(activeLocale(), { month: "long", year: "numeric" });
+        $("#month-hint").textContent = t("monthSummary", monthFormat.format(new Date(`${selectedMonth}-01T12:00:00`)));
+      }
+
+      function renderTransactions(monthEntries) {
+        const visible = monthEntries
+          .filter((entry) => activeFilter === "all" || entry.type === activeFilter)
+          .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+        $("#entry-count").textContent = t("transactionCount", visible.length);
+        const list = $("#transaction-list");
+        if (!visible.length) {
+          const emptyText = monthEntries.length
+            ? t("noMatchingEntries")
+            : t("noEntries");
+          list.innerHTML = `<li class="empty"><span class="empty-icon" aria-hidden="true">＋</span><strong>${emptyText}</strong><span>${t("getStarted")}</span></li>`;
+          return;
+        }
+        list.innerHTML = visible.map((entry) => {
+          const sign = entry.type === "income" ? "+" : "−";
+          const icon = categoryIcons[entry.category] || "📌";
+          const timestamp = new Date(`${entry.date}T12:00:00`);
+          const dateFormat = new Intl.DateTimeFormat(activeLocale(), { day: "numeric", month: "short", year: "numeric" });
+          return `<li class="transaction">
+            <span class="transaction-icon ${entry.type}" aria-hidden="true">${icon}</span>
+            <div class="transaction-copy">
+              <div class="transaction-title">${escapeHtml(entry.title)}</div>
+              <div class="transaction-meta">${escapeHtml(categoryLabel(entry.category))} · ${dateFormat.format(timestamp)}</div>
+            </div>
+            <div class="transaction-trailing">
+              <span class="transaction-amount ${entry.type}">${sign} ${formatMoney(entry.amount)}</span>
+              <button class="row-action" type="button" data-edit="${escapeHtml(entry.id)}" aria-label="${escapeHtml(t("editEntry", entry.title))}" title="${escapeHtml(t("editAction"))}">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m14 6 4 4M4 20l4-.8L19 8a2.1 2.1 0 0 0-3-3L5 16l-1 4Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="row-action delete" type="button" data-delete="${escapeHtml(entry.id)}" aria-label="${escapeHtml(t("deleteEntry", entry.title))}" title="${escapeHtml(t("deleteAction"))}">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16m-10 4v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </li>`;
+        }).join("");
+      }
+
+      function renderCategories(monthEntries) {
+        const expenseEntries = monthEntries.filter((entry) => entry.type === "expense");
+        const totals = new Map();
+        expenseEntries.forEach((entry) => totals.set(entry.category, (totals.get(entry.category) || 0) + entry.amount));
+        const categoriesBySpend = [...totals.entries()].sort((a, b) => b[1] - a[1]);
+        const container = $("#category-list");
+        if (!categoriesBySpend.length) {
+          container.innerHTML = `<div class="category-empty">${t("emptyCategory")}</div>`;
+          return;
+        }
+        const max = categoriesBySpend[0][1];
+        container.innerHTML = categoriesBySpend.map(([category, total]) => {
+          const width = Math.max(4, Math.round((total / max) * 100));
+          return `<div class="category-row">
+            <div class="category-top"><span class="category-name">${escapeHtml(categoryLabel(category))}</span><span class="category-value">${formatMoney(total)}</span></div>
+            <div class="bar-track" aria-label="${escapeHtml(categoryLabel(category))}: ${Math.round((total / max) * 100)}%"><div class="bar-fill" style="width:${width}%"></div></div>
+          </div>`;
+        }).join("");
+      }
+
+      function renderPieChart(monthEntries) {
+        const totals = new Map();
+        monthEntries.forEach((entry) => {
+          const key = `${entry.type}:${entry.category}`;
+          const current = totals.get(key);
+          if (current) current.amount += entry.amount;
+          else totals.set(key, { type: entry.type, category: entry.category, amount: entry.amount });
+        });
+        const slices = [...totals.values()].sort((a, b) => b.amount - a.amount);
+        const total = slices.reduce((sum, slice) => sum + slice.amount, 0);
+        const chart = $("#pie-chart");
+        const legend = $("#pie-legend");
+        const empty = $("#pie-empty");
+        $("#pie-total").textContent = formatMoney(total);
+        chart.setAttribute("aria-label", t("pieAria", slices.length, formatMoney(total)));
+        empty.hidden = slices.length > 0;
+        if (!slices.length) {
+          chart.style.background = "#ececf2";
+          legend.innerHTML = "";
+          return;
+        }
+
+        let accumulated = 0;
+        const gradient = slices.map((slice, index) => {
+          const start = (accumulated / total) * 100;
+          accumulated += slice.amount;
+          const end = index === slices.length - 1 ? 100 : (accumulated / total) * 100;
+          return `${categoryColors[slice.category]} ${start.toFixed(3)}% ${end.toFixed(3)}%`;
+        });
+        chart.style.background = `conic-gradient(${gradient.join(", ")})`;
+        const percentage = new Intl.NumberFormat(activeLocale(), {
+          style: "percent",
+          maximumFractionDigits: 1
+        });
+        legend.innerHTML = slices.map((slice) => {
+          const color = categoryColors[slice.category];
+          const share = percentage.format(slice.amount / total);
+          return `<li class="pie-legend-item">
+            <span class="pie-swatch" style="--slice-color:${color}" aria-hidden="true"></span>
+            <div class="pie-category"><strong>${escapeHtml(categoryLabel(slice.category))}</strong><span>${escapeHtml(t(slice.type))}</span></div>
+            <div class="pie-stat"><strong>${formatMoney(slice.amount)}</strong><span>${escapeHtml(t("shareOfTotal", share))}</span></div>
+          </li>`;
+        }).join("");
+      }
+
+      function render() {
+        monthInput.value = selectedMonth;
+        const monthEntries = getMonthEntries();
+        renderSummary(monthEntries);
+        renderTransactions(monthEntries);
+        renderCategories(monthEntries);
+        renderPieChart(monthEntries);
+      }
+
+      function todayIso() {
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      }
+
+      function dateForSelectedMonth() {
+        const today = todayIso();
+        return today.slice(0, 7) === selectedMonth ? today : `${selectedMonth}-01`;
+      }
+
+      function updateCategories(type, preferredCategory) {
+        const select = $("#entry-category");
+        select.innerHTML = categories[type].map((category) =>
+          `<option value="${escapeHtml(category)}">${escapeHtml(categoryLabel(category))}</option>`
+        ).join("");
+        if (preferredCategory && categories[type].includes(preferredCategory)) select.value = preferredCategory;
+      }
+
+      function setType(type) {
+        selectedType = type;
+        document.querySelectorAll(".type-option").forEach((button) => {
+          button.setAttribute("aria-pressed", String(button.dataset.type === type));
+        });
+        updateCategories(type);
+      }
+
+      function openForm(type, entry) {
+        editingId = entry ? entry.id : null;
+        setType(entry ? entry.type : type);
+        $("#dialog-title").textContent = t(entry ? "editDialogTitle" : "addEntryTitle");
+        $("#entry-title").value = entry ? entry.title : "";
+        $("#entry-amount").value = entry ? String(entry.amount) : "";
+        $("#entry-date").value = entry ? entry.date : dateForSelectedMonth();
+        if (entry) updateCategories(entry.type, entry.category);
+        $("#save-entry").textContent = t(entry ? "saveChanges" : "save");
+        $("#entry-amount").step = preferences.currency === "JPY" ? "1" : "0.01";
+        $("#entry-amount").min = preferences.currency === "JPY" ? "1" : "0.01";
+        dialog.showModal();
+        $("#entry-title").focus();
+      }
+
+      function closeForm() {
+        dialog.close();
+        form.reset();
+        editingId = null;
+      }
+
+      document.querySelectorAll("[data-open-form]").forEach((button) => {
+        button.addEventListener("click", () => openForm(button.dataset.openForm));
+      });
+      document.querySelectorAll(".type-option").forEach((button) => {
+        button.addEventListener("click", () => setType(button.dataset.type));
+      });
+      $("#close-dialog").addEventListener("click", closeForm);
+      $("#cancel-dialog").addEventListener("click", closeForm);
+      languageSelect.addEventListener("change", () => {
+        savePreferences({ ...preferences, language: languageSelect.value });
+      });
+      currencySelect.addEventListener("change", () => {
+        savePreferences({ ...preferences, currency: currencySelect.value });
+      });
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (!form.reportValidity()) return;
+        const title = $("#entry-title").value.trim();
+        const amount = Number($("#entry-amount").value);
+        const date = $("#entry-date").value;
+        if (!title || !Number.isFinite(amount) || amount <= 0 || !date) {
+          showNotice(t("validationError"));
+          return;
+        }
+        const existing = editingId ? entries.find((entry) => entry.id === editingId) : null;
+        const entry = {
+          id: existing ? existing.id : (window.crypto && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`),
+          type: selectedType,
+          title,
+          category: $("#entry-category").value,
+          amount,
+          date,
+          updatedAt: Date.now()
+        };
+        const nextEntries = existing
+          ? entries.map((item) => item.id === editingId ? entry : item)
+          : [...entries, entry];
+        if (persist(nextEntries)) {
+          selectedMonth = date.slice(0, 7);
+          render();
+          closeForm();
+          showNotice(t(existing ? "updated" : "saved"));
+        }
+      });
+
+      $("#transaction-list").addEventListener("click", (event) => {
+        const editButton = event.target.closest("[data-edit]");
+        const deleteButton = event.target.closest("[data-delete]");
+        if (editButton) {
+          const entry = entries.find((item) => item.id === editButton.dataset.edit);
+          if (entry) openForm(entry.type, entry);
+        } else if (deleteButton) {
+          const entry = entries.find((item) => item.id === deleteButton.dataset.delete);
+          if (!entry || !window.confirm(t("confirmDelete", entry.title))) return;
+          const nextTombstones = {
+            ...syncState.tombstones,
+            [entry.id]: Date.now()
+          };
+          if (persist(entries.filter((item) => item.id !== entry.id), nextTombstones)) showNotice(t("deleted"));
+        }
+      });
+
+      document.querySelectorAll(".filter").forEach((button) => {
+        button.addEventListener("click", () => {
+          activeFilter = button.dataset.filter;
+          document.querySelectorAll(".filter").forEach((item) =>
+            item.setAttribute("aria-pressed", String(item === button))
+          );
+          renderTransactions(getMonthEntries());
+        });
+      });
+      monthInput.addEventListener("change", () => {
+        if (/^\d{4}-\d{2}$/.test(monthInput.value)) {
+          selectedMonth = monthInput.value;
+          render();
+        }
+      });
+      function shiftMonth(amount) {
+        const [year, month] = selectedMonth.split("-").map(Number);
+        const next = new Date(year, month - 1 + amount, 1);
+        selectedMonth = `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}`;
+        render();
+      }
+      $("#previous-month").addEventListener("click", () => shiftMonth(-1));
+      $("#next-month").addEventListener("click", () => shiftMonth(1));
+
+      document.addEventListener("masika-cloud-ready", (event) => {
+        cloudConfigured = Boolean(event.detail.configured && !event.detail.error && window.masikaCloud?.signIn);
+        cloudStatusKey = cloudConfigured ? "cloudConfigured" : (event.detail.error ? "cloudError" : "cloudLocal");
+        renderCloudPanel();
+      });
+      document.addEventListener("masika-auth-state", (event) => {
+        handleCloudAuthState(event.detail.user);
+      });
+      document.addEventListener("masika-cloud-data", handleCloudSnapshot);
+      document.addEventListener("masika-cloud-error", (event) => {
+        console.error("Firebase cloud listener failed:", event.detail.error);
+        cloudStatusKey = "cloudError";
+        renderCloudPanel();
+      });
+      $("#google-login").addEventListener("click", async () => {
+        cloudBusy = true;
+        renderCloudPanel();
+        try {
+          await window.masikaCloud.signIn("google");
+        } catch (error) {
+          console.error("Google sign-in failed:", error);
+          cloudStatusKey = "cloudError";
+          showNotice(t("cloudLoginError"));
+        } finally {
+          cloudBusy = false;
+          renderCloudPanel();
+        }
+      });
+      $("#apple-login").addEventListener("click", async () => {
+        cloudBusy = true;
+        renderCloudPanel();
+        try {
+          await window.masikaCloud.signIn("apple");
+        } catch (error) {
+          console.error("Apple sign-in failed:", error);
+          cloudStatusKey = "cloudError";
+          showNotice(t("cloudLoginError"));
+        } finally {
+          cloudBusy = false;
+          renderCloudPanel();
+        }
+      });
+      $("#cloud-logout").addEventListener("click", async () => {
+        cloudBusy = true;
+        renderCloudPanel();
+        try {
+          await window.masikaCloud.signOut();
+        } catch (error) {
+          console.error("Could not sign out:", error);
+          showNotice(t("cloudError"));
+        } finally {
+          cloudBusy = false;
+          renderCloudPanel();
+        }
+      });
+      $("#cloud-delete").addEventListener("click", async () => {
+        if (!window.confirm(t("deleteAccountConfirm"))) return;
+        cloudBusy = true;
+        renderCloudPanel();
+        try {
+          await window.masikaCloud.deleteAccount();
+          localStorage.removeItem(STORAGE_KEY);
+          localStorage.removeItem(SYNC_STATE_KEY);
+          localStorage.removeItem(SYNC_OWNER_KEY);
+          entries = [];
+          syncState = { tombstones: {} };
+          render();
+          showNotice(t("accountDeleted"));
+        } catch (error) {
+          console.error("Could not delete the cloud account:", error);
+          showNotice(t("accountDeleteError"));
+        } finally {
+          cloudBusy = false;
+          renderCloudPanel();
+        }
+      });
+      window.addEventListener("online", () => {
+        if (cloudUser && cloudSyncReadyUid === cloudUser.uid) {
+          syncCloudBudget(entries, syncState.tombstones);
+        }
+      });
+
+      applyTranslations();
+      updateCategories("expense");
+      render();
+      if (preferencesReadFailed) showNotice(t("preferencesReadError"));
+    })();
+
+    if ("serviceWorker" in navigator && location.protocol !== "file:") {
+      window.addEventListener("load", () => {
+        const scope = new URL("./", document.baseURI).pathname;
+        navigator.serviceWorker.register("./service-worker.js", { scope })
+          .catch((error) => console.error("Could not register the app for offline use:", error));
+      });
+    }
+  </script>
+  <script type="module" src="./firebase-client.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "id": "./",
+  "name": "මාසික — මාසික අයවැය",
+  "short_name": "මාසික",
+  "description": "මාසික ආදායම් සහ වියදම් සටහන් කර ඉතිරි මුදල බලන්න.",
+  "lang": "si-LK",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#f6f7fb",
+  "theme_color": "#f6f7fb",
+  "categories": ["finance", "utilities"],
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
